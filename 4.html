@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>算法实验四</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        body {
+            width: 100%;
+            height: 100%;
+            background-image: url("image/jianyue.jpeg");
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+
+        .first-container {
+            padding-left: 400px;
+            padding-top: 200px;
+            font-size: large;
+        }
+
+        .first-container input {
+            margin-bottom: 20px;
+            border-radius: 5px;
+            font-size: 30px;
+        }
+
+        .first-container div {
+            color: white;
+            font-size: 25px;
+            border-bottom: 1px solid blue;
+        }
+
+        .first-container button {
+            font-size: 25px;
+            border-radius: 5px;
+            background-color: green;
+            cursor: pointer;
+        }
+
+        .second-container {
+            padding-left: 400px;
+            padding-top: 200px;
+            font-size: large;
+            clear: both;
+        }
+
+        .second-container input {
+            margin-bottom: 20px;
+            border-radius: 5px;
+            font-size: 30px;
+        }
+
+        .second-container div {
+            color: white;
+            font-size: 25px;
+            border-bottom: 1px solid blue;
+        }
+
+        .second-container button {
+            font-size: 25px;
+            border-radius: 5px;
+            background-color: green;
+            cursor: pointer;
+        }
+
+        .second-container #ccc {
+            padding-left: 20px;
+        }
+
+        table {
+            border-collapse: collapse;
+            margin: 30px;
+            float: left;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            border: 1px solid yellowgreen;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="first-container">
+            <input id="firstnum1" type="text" placeholder="请在这里输入皇后数量n">
+            <button onclick="firstclick()">确定</button>
+            <div>可行解数量：<span id="res1"></span>
+            </div>
+            <div>
+                <div id="res2"></div>
+            </div>
+        </div>
+        <div class="second-container">
+            <input id="secondnum1" type="text" placeholder="请在这里输入S集合">
+            <input id="secondnum2" type="text" placeholder="请在这里输入M">
+            <button onclick="secondclick()">确定</button>
+            <div>可行解：<div id="res3"></div>
+            </div>
+        </div>
+    </div>
+    <script>
+        var FFF = new Set();
+        const solveNQueens = (n) => {
+            const board = new Array(n);
+            for (let i = 0; i < n; i++) {
+                board[i] = new Array(n).fill(' ');
+            }
+
+            const cols = new Set();  // 列集，记录出现过皇后的列
+            const diag1 = new Set(); // 正对角线集
+            const diag2 = new Set(); // 反对角线集
+            const res = [];
+
+            const helper = (row) => {
+                if (row == n) {
+                    const stringsBoard = board.slice();
+                    for (let i = 0; i < n; i++) {
+                        stringsBoard[i] = stringsBoard[i].join('');
+                    }
+                    res.push(stringsBoard);
+                    return;
+                }
+                for (let col = 0; col < n; col++) {
+                    // 如果当前点的所在的列，所在的对角线都没有皇后，即可选择，否则，跳过
+                    if (!cols.has(col) && !diag1.has(row + col) && !diag2.has(row - col)) {
+                        board[row][col] = 'Q';  // 放置皇后
+                        cols.add(col);          // 记录放了皇后的列
+                        diag2.add(row - col);   // 记录放了皇后的正对角线
+                        diag1.add(row + col);   // 记录放了皇后的负对角线
+                        helper(row + 1);
+                        board[row][col] = ' ';  // 撤销该点的皇后
+                        cols.delete(col);       // 对应的记录也删一下
+                        diag2.delete(row - col);
+                        diag1.delete(row + col);
+                    }
+                }
+            };
+            helper(0);
+            return res;
+        };
+        function firstclick() {
+            var res1 = document.getElementById('res1');
+            var res2 = document.getElementById('res2');
+            var num1 = document.getElementById('firstnum1');
+            num1 = parseInt(num1.value);
+            var result1 = solveNQueens(num1);
+            res1.innerText = result1.length;
+            let table = [];
+            for (let i = 0; i < result1.length; i++) {
+                for (let j = 0; j < result1[0].length; j++) {
+                    result1[i][j] = result1[i][j].split('');
+                }
+            }
+            for (let i = 0; i < result1.length; i++) {
+                table[i] = document.createElement('table');
+                let tr = [];
+                for (let j = 0; j < result1[i].length; j++) {
+                    tr[j] = document.createElement('tr');
+                    let td = [];
+                    let ccc;
+                    let vvv = 'Q'
+                    for (let k in result1[i][j]) {
+                        td[k] = document.createElement('td');
+                        for(let p in result1[i][j]){
+                            if(result1[i][j][p] === vvv){
+                                ccc = p;
+                            }
+                        }
+                        td[k].innerHTML = `${result1[i][j][k]}`
+                        td[k+1] = ccc;
+                        tr[j].appendChild(td[k]);
+                    } 
+                    table[i].appendChild(tr[j]);
+                }
+                res2.appendChild(table[i]);
+            }
+        }
+
+        var subsets = function (nums) {
+            const t = [];
+            const ans = [];
+            const n = nums.length;
+            const dfs = (cur) => {
+                if (cur === nums.length) {
+                    ans.push(t.slice());
+                    return;
+                }
+                t.push(nums[cur]);
+                dfs(cur + 1, nums);
+                t.pop(t.length - 1);
+                dfs(cur + 1, nums);
+            }
+            dfs(0, nums);
+            return ans;
+        };
+        var final = [];
+        var mark = 0;
+        function judge(nums, M) {
+            var a = subsets(nums);
+            a.forEach(element => {
+                let sum = 0;
+                element.forEach(element => {
+                    sum += element;
+                });
+                if (sum == M) {
+                    final.push(element);
+                    mark = 1;
+                }
+            });
+        }
+        function secondclick() {
+            var res3 = document.getElementById('res3');
+            var num1 = document.getElementById('secondnum1');
+            var num2 = document.getElementById('secondnum2');
+            num2 = parseInt(num2.value);
+            num1 = num1.value;
+            num1 = num1.split(" ");
+            nums1 = [];
+            for (let i = 0; i < num1.length; i++) {
+                nums1.push(parseInt(num1[i]));
+            }
+            judge(nums1, num2);
+            if (mark) {
+                final.forEach(element => {
+                    res3.innerText += `
+                                    ${element}`
+                });
+            }
+            else{
+                res3.innerText = "无解"
+            }
+        }
+
+    </script>
+</body>
+
+</html>

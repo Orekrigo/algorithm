@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>算法实验三</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        body {
+            width: 100%;
+            height: 100%;
+            background-image: url("image/jianyue.jpeg");
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+
+        .first-container {
+            padding-left: 400px;
+            padding-top: 200px;
+            font-size: large;
+        }
+
+        .first-container input {
+            margin-bottom: 20px;
+            border-radius: 5px;
+            font-size: 30px;
+        }
+
+        .first-container div {
+            color: white;
+            font-size: 25px;
+            border-bottom: 1px solid blue;
+        }
+
+        .first-container button {
+            font-size: 25px;
+            border-radius: 5px;
+            background-color: green;
+            cursor: pointer;
+        }
+
+        .second-container {
+            padding-left: 400px;
+            padding-top: 200px;
+            font-size: large;
+        }
+
+        .second-container input {
+            margin-bottom: 20px;
+            border-radius: 5px;
+            font-size: 30px;
+        }
+
+        .second-container div {
+            color: white;
+            font-size: 25px;
+            border-bottom: 1px solid blue;
+        }
+
+        .second-container button {
+            font-size: 25px;
+            border-radius: 5px;
+            background-color: green;
+            cursor: pointer;
+        }
+
+        .second-container #ccc {
+            padding-left: 20px;
+        }
+
+        table {
+            border-collapse: collapse;
+            margin: 100px auto;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="first-container">
+            <input id="firstnum3" type="text" placeholder="请在这里输入背包容积">
+            <input id="firstnum1" type="text" placeholder="请在这里输入values">
+            <input id="firstnum2" type="text" placeholder="请在这里输入weights">
+            <button onclick="firstclick()">确定</button>
+            <div>排序后价值：<span id="res4"></span></div>
+            <div>排序后重量：<span id="res5"></span></div>
+            <div>装入价值：<span id="res1"></span></div>
+            <div>装入重量：<span id="res2"></span></div>
+            <div>装入总价值：<span id="res3"></span></div>
+        </div>
+        <div class="second-container">
+            <input id="secondnum1" type="text" placeholder="请在这里输入活动个数">
+            <input id="secondnum2" type="text" placeholder="请在这里输入活动开始时间">
+            <input id="secondnum3" type="text" placeholder="请在这里输入活动结束时间">
+            <button onclick="secondclick()">确定</button>
+            <div>排序后活动：<div id="res6"></div>
+            </div>
+            <div>选取活动个数：<span id="res7"></span></div>
+            <div>选取活动情况：<div id="res8"></div>
+            </div>
+        </div>
+    </div>
+    <script>
+        var finalValue = [];
+        var finalWeight = [];
+        var sortedValue = [];
+        var sortedWeight = [];
+        function greedy(values, weights, capacity) {
+            var returnValue = 0;
+            var remainCapacity = capacity;
+            var sortArray = [];
+            values.map((cur, index) => {
+                sortArray.push({
+                    'value': values[index],
+                    'weight': weights[index],
+                    'ratio': values[index] / weights[index]
+                })
+            })
+            sortArray.sort(function (a, b) {
+                return b.ratio - a.ratio;
+            })
+            sortArray.forEach((res) => {
+                sortedValue.push(res.value);
+                sortedWeight.push(res.weight)
+            })
+            sortArray.map((cur, index) => {
+                if (remainCapacity == 0) return returnValue;
+                if (remainCapacity >= cur.weight) {
+                    remainCapacity -= cur.weight;
+                    returnValue += cur.value;
+
+                    finalValue.push(cur.value);
+                    finalWeight.push(cur.weight);
+                }
+                else {
+                    returnValue += cur.ratio * remainCapacity;
+
+                    finalValue.push(cur.ratio * remainCapacity);
+                    finalWeight.push(remainCapacity);
+
+                    remainCapacity = 0;
+                }
+            })
+            return returnValue
+        }
+        // var values =  50 220 60 60
+        // var weights =  5 20 12 10
+        // var capacity = 32 //背包容积
+        //11
+        //6 8 8 2 12 5 3 5 0 3 1
+        //10 11 12 13 14 9 5 7 6 8 4
+
+        function firstclick() {
+            var res1 = document.getElementById('res1');
+            var res2 = document.getElementById('res2');
+            var res3 = document.getElementById('res3');
+            var res4 = document.getElementById('res4');
+            var res5 = document.getElementById('res5');
+            var num1 = document.getElementById('firstnum1');
+            var num2 = document.getElementById('firstnum2');
+            var num3 = document.getElementById('firstnum3');
+            num1 = num1.value;
+            num1 = num1.split(" ");
+            num2 = num2.value;
+            num2 = num2.split(" ");
+            num3 = parseInt(num3.value);
+            var nums1 = [];
+            var nums2 = [];
+            for (let i = 0; i < num1.length; i++) {
+                nums1.push(parseInt(num1[i]));
+                nums2.push(parseInt(num2[i]));
+            }
+            var result1 = greedy(nums1, nums2, num3)
+            res1.innerText = finalValue;
+            res2.innerText = finalWeight;
+            res3.innerText = result1;
+            res4.innerText = sortedValue;
+            res5.innerText = sortedWeight;
+        }
+
+
+        function sort(s, f) {
+            f.forEach((res1, index1) => {
+                f.forEach((res2, index2) => {
+                    if (res1 < res2) {
+                        [f[index1], f[index2]] = [f[index2], f[index1]];
+                        [s[index1], s[index2]] = [s[index2], s[index1]];
+                    }
+                })
+            })
+        }
+        var A = [];
+        function activityArrange(n, s, f) {
+            var k = 0;
+            A[k] = 0;
+            var j = 0, count = 1;  
+            for (let i = 1; i < n; i++) {
+                if (s[i] >= f[j]) {
+                    A[++k] = i;
+                    j = i;
+                    count++;
+                }
+            }
+            return count;
+        }
+
+        function secondclick() {
+            var res6 = document.getElementById('res6');
+            var res7 = document.getElementById('res7');
+            var res8 = document.getElementById('res8');
+            var num1 = document.getElementById('secondnum1');
+            var num2 = document.getElementById('secondnum2');
+            var num3 = document.getElementById('secondnum3');
+            var table1 = document.createElement('table');
+            var table2 = document.createElement('table');
+            res6.appendChild(table1);
+            res8.appendChild(table2);
+            num1 = parseInt(num1.value);
+            num2 = num2.value;
+            num2 = num2.split(" ");
+            num3 = num3.value;
+            num3 = num3.split(" ");
+            nums1 = [];
+            nums2 = [];
+            for (let i = 0; i < num2.length; i++) {
+                nums1.push(parseInt(num2[i]));
+                nums2.push(parseInt(num3[i]));
+            }
+            sort(nums1, nums2);
+            var result2 = activityArrange(num1, nums1, nums2);
+            var nums3 = [];
+            var nums4 = [];
+            nums3.push('开始时间si');
+            nums4.push('结束时间fi');
+            for (let i = 0; i < A.length; i++) {
+                nums3.push(nums1[A[i]]);
+                nums4.push(nums2[A[i]]);
+            }
+            nums1.unshift('开始时间si');
+            nums2.unshift('结束时间fi');
+            let numm1 = ['活动i'];
+            for (let i = 0; i < nums1.length; i++) {
+                numm1.push(i+1);
+            }
+            for (let i = 0; i < nums1.length; i++) {
+                let th1 = document.createElement('th');
+                th1.innerHTML = `${numm1[i]}`
+                table1.appendChild(th1);
+            }
+            let tr1 = document.createElement('tr');
+            for (let i = 0; i < nums1.length; i++) {
+                let td1 = document.createElement('td');
+                td1.innerHTML = `${nums1[i]}`
+                tr1.appendChild(td1);
+            }
+            table1.appendChild(tr1);
+            let tr2 = document.createElement('tr');
+            for (let i = 0; i < nums1.length; i++) {
+                let td2 = document.createElement('td');
+                td2.innerHTML = `${nums2[i]}`
+                tr2.appendChild(td2);
+            }
+            table1.appendChild(tr2);
+            res7.innerText = result2;
+            let numm2 = ['活动i'];
+            for (let i = 0; i < nums3.length; i++) {
+                numm2.push(i+1);
+            }
+            for (let i = 0; i < nums3.length; i++) {
+                let th2 = document.createElement('th');
+                th2.innerHTML = `${numm2[i]}`
+                table2.appendChild(th2);
+            }
+            let tr3 = document.createElement('tr');
+            for (let i = 0; i < nums3.length; i++) {
+                let td3 = document.createElement('td');
+                td3.innerHTML = `${nums3[i]}`
+                tr3.appendChild(td3);
+            }
+            table2.appendChild(tr3);
+            let tr4 = document.createElement('tr');
+            for (let i = 0; i < nums3.length; i++) {
+                let td4 = document.createElement('td');
+                td4.innerHTML = `${nums4[i]}`
+                tr4.appendChild(td4);
+            }
+            table2.appendChild(tr4);
+        }
+
+
+
+
+    </script>
+</body>
+
+</html>

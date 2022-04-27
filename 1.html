@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>算法实验一</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        body {
+            width: 100%;
+            height: 100%;
+            background-image: url("image/yuzhou2.jpeg");
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+
+        .first-container {
+            text-align: center;
+            padding-top: 200px;
+            font-size: large;
+        }
+
+        .first-container input {
+            margin-bottom: 20px;
+            border-radius: 5px;
+            font-size: 30px;
+        }
+
+        .first-container div {
+            padding-right: 300px;
+            color: white;
+            font-size: 25px;
+        }
+
+        .first-container button {
+            font-size: 25px;
+            border-radius: 5px;
+            background-color: green;
+            cursor: pointer;
+        }
+
+        .second-container {
+            text-align: center;
+            padding-top: 200px;
+            font-size: large;
+        }
+
+        .second-container input {
+            margin-bottom: 20px;
+            border-radius: 5px;
+            font-size: 30px;
+        }
+
+        .second-container div {
+            padding-right: 300px;
+            color: white;
+            font-size: 25px;
+        }
+
+        .second-container button {
+            font-size: 25px;
+            border-radius: 5px;
+            background-color: green;
+            cursor: pointer;
+        }
+
+        .second-container #ccc {
+            padding-left: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="first-container">
+            <input id="firstnum" type="text" placeholder="请在这里输入">
+            <button onclick="firstclick()">确定</button>
+            <div>最大子段和：<span id="res1"></span></div>
+        </div>
+        <div class="second-container">
+            <input id="secondnum" type="text" placeholder="请在这里输入">
+            <button onclick="secondclick()">确定</button>
+            <div>众数： <span id="res2"> </span> <span id="ccc">重数：</span> <span id="res3"></span></div>
+        </div>
+    </div>
+    <script>
+        function Status(l, r, m, i) {
+            this.lSum = l;
+            this.rSum = r;
+            this.mSum = m;
+            this.iSum = i;
+        }
+
+        const pushUp = (l, r) => {
+            const iSum = l.iSum + r.iSum;
+            const lSum = Math.max(l.lSum, l.iSum + r.lSum);
+            const rSum = Math.max(r.rSum, r.iSum + l.rSum);
+            const mSum = Math.max(Math.max(l.mSum, r.mSum), l.rSum + r.lSum);
+            return new Status(lSum, rSum, mSum, iSum);
+        }
+
+        const getInfo = (a, l, r) => {
+            if (l === r) {
+                return new Status(a[l], a[l], a[l], a[l]);
+            }
+            const m = (l + r) >> 1;
+            const lSub = getInfo(a, l, m);
+            const rSub = getInfo(a, m + 1, r);
+            return pushUp(lSub, rSub);
+        }
+
+        var maxSubArray = function (nums) {
+            return getInfo(nums, 0, nums.length - 1).mSum;
+        }
+
+        function firstclick() {
+            var res1 = document.getElementById('res1');
+            var num = document.getElementById('firstnum');
+            nums = num.value;
+            nums = nums.split(" ");
+            var nums2 = [];
+            for (let i = 0; i < nums.length; i++) {
+                nums2.push(parseInt(nums[i]));
+            }
+            var result1 = maxSubArray(nums2);
+            if (result1 < 0) { res1.innerText = 0; }
+            else {
+                res1.innerText = result1;
+            }
+        }
+
+
+
+        var zhongshu = 0;
+        var chongshu = 0;
+
+        function split(a, left, right) {
+            if (left > right) return;
+            var mid = Math.floor((left + right) / 2);
+            var lleft = left;
+            var rright = right;
+            for (; left < mid && a[left] != a[mid]; left++);
+            for (; right > mid && a[right] != a[mid]; right--);
+            if (right - left + 1 >= chongshu) {
+                chongshu = right - left + 1;
+                zhongshu = a[mid];
+            }
+            if (left - lleft >= chongshu)//如果左侧的个数大于重数的话就对左侧数组继续进行操作
+            {
+                split(a, lleft, left - 1);
+            }
+            if (rright - right >= chongshu) {
+                split(a, right + 1, rright);
+            }
+        }
+
+        function secondclick() {
+            var k;
+            var res2 = document.getElementById('res2');
+            var res3 = document.getElementById('res3');
+            var num = document.getElementById('secondnum');
+            nums = num.value;
+            nums = nums.split(" ");
+            nums2 = [];
+            for (let i = 0; i < nums.length; i++) {
+                nums2.push(parseInt(nums[i]));
+            }
+            nums2 = nums2.sort()
+            split(nums2, 0, nums2.length - 1);
+            res2.innerText = zhongshu;
+            res3.innerText = chongshu;
+        }
+
+
+
+
+    </script>
+</body>
+
+</html>

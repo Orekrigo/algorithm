@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>算法实验二</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        body {
+            width: 100%;
+            height: 100%;
+            background-image: url("image/jianyue.jpeg");
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+
+        .first-container {
+            text-align: center;
+            padding-top: 150px;
+            font-size: large;
+        }
+
+        .first-container input {
+            margin-bottom: 20px;
+            border-radius: 5px;
+            font-size: 30px;
+        }
+
+        .first-container div {
+            padding-right: 300px;
+            color: white;
+            font-size: 25px;
+            padding-top: 20px;
+        }
+
+        .first-container button {
+            font-size: 25px;
+            border-radius: 5px;
+            background-color: green;
+            cursor: pointer;
+        }
+
+        .second-container {
+            text-align: center;
+            padding-top: 50px;
+            font-size: large;
+        }
+
+        .second-container input {
+            margin-bottom: 20px;
+            border-radius: 5px;
+            font-size: 30px;
+        }
+
+        .second-container div {
+            padding-right: 300px;
+            color: white;
+            font-size: 25px;
+            padding-top: 15px;
+        }
+
+        .second-container button {
+            font-size: 25px;
+            border-radius: 5px;
+            background-color: green;
+            cursor: pointer;
+        }
+
+        .second-container .ccc {
+            margin-left: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="first-container">
+            <input id="firstnum" type="text" placeholder="请在这里输入">
+            <button onclick="firstclick()">确定</button>
+            <div>最大子段和：<span id="res1"></span></div>
+            <div>besti: <span id="res2"></span></div>
+            <div>bestj: <span id="res3"></span></div>
+        </div>
+        <div class="second-container">
+            <input id="secondnum" type="text" placeholder="请在这里输入">
+            <input id="thirdnum" type="text" placeholder="请在这里输入">
+            <button onclick="secondclick()">确定</button>
+            <div>最长公共子序列： <span id="res4"> </span> </div>
+            <div>最长公共子序列长度： <span id="res5"> </span> </div>
+        </div>
+    </div>
+    <script>
+        var besti = 0;
+        var bestj = 0;
+        var maxSubArray = function (nums) {
+            let pre = 0, maxAns = nums[0];
+            nums.forEach((x) => {
+                pre = Math.max(pre + x, x);
+                if (pre == x) {
+                    besti = nums.indexOf(x) + 1;
+                }
+                maxAns = Math.max(maxAns, pre);
+                if (maxAns == pre) {
+                    bestj = nums.indexOf(x) + 1;
+                }
+            });
+            return maxAns;
+        };
+
+        function firstclick() {
+            var res1 = document.getElementById('res1');
+            var res2 = document.getElementById('res2');
+            var res3 = document.getElementById('res3');
+            var num = document.getElementById('firstnum');
+            nums = num.value;
+            nums = nums.split(" ");
+            var nums2 = [];
+            for (let i = 0; i < nums.length; i++) {
+                nums2.push(parseInt(nums[i]));
+            }
+            var result1 = maxSubArray(nums2);
+            if (result1 < 0) { res1.innerText = 0; }
+            else {
+                res1.innerText = result1;
+                res2.innerText = besti;
+                res3.innerText = bestj;
+            }
+        }
+
+
+        function printLCS(dp, str1, str2, i, j) {
+            if (i == 0 || j == 0) {
+                return "";
+            }
+            if (str1[i - 1] == str2[j - 1]) {
+                return printLCS(dp, str1, str2, i - 1, j - 1) + str1[i - 1];
+            } else {
+                if (dp[i][j - 1] > dp[i - 1][j]) {
+                    return printLCS(dp, str1, str2, i, j - 1);
+                } else {
+                    return printLCS(dp, str1, str2, i - 1, j);
+                }
+            }
+        }
+        var s;
+        function LCS(str1, str2) {
+            var m = str1.length
+            var n = str2.length
+            var dp = [new Array(n + 1).fill(0)] //第一行全是0
+            for (var i = 1; i <= m; i++) { //一共有m+1行
+                dp[i] = [0] //第一列全是0
+                for (var j = 1; j <= n; j++) {//一共有n+1列
+                    if (str1[i - 1] === str2[j - 1]) {
+                        //注意这里，str1的第一个字符是在第二列中，因此要减1，str2同理
+                        dp[i][j] = dp[i - 1][j - 1] + 1 //对角＋1
+                    } else {
+                        dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1])
+                    }
+                }
+            }
+            s = printLCS(dp, str1, str2, m, n)
+            return dp[m][n];
+        };
+        function secondclick() {
+            var k;
+            var res4 = document.getElementById('res4');
+            var res5 = document.getElementById('res5');
+            var num = document.getElementById('secondnum');
+            var thirdnum = document.getElementById('thirdnum');
+            nums1 = num.value;
+            nums2 = thirdnum.value;
+            nums3 = nums1.split(' ');
+            nums4 = nums2.split(' ');
+            console.log(nums3);
+            console.log(nums4);
+            var result2 = LCS(nums3, nums4);
+            s = s.split("").join(",");
+            res4.innerText = s;
+            res5.innerText = result2;
+        }
+    </script>
+</body>
+
+</html>
